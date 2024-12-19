@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
 
 interface AudioMeterProps {
-  theme?: 'default' | 'neon' | 'vintage';
+  theme?: 'default' | 'neon' | 'vintage' | 'purple' | 'soft';
   className?: string;
 }
 
@@ -12,6 +13,8 @@ export const AudioMeter = ({ theme = 'default', className }: AudioMeterProps) =>
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number>();
   const mediaStreamRef = useRef<MediaStream | null>(null);
+  const { toast } = useToast();
+  const [isListening, setIsListening] = useState(false);
 
   const themeColors = {
     default: {
@@ -29,11 +32,32 @@ export const AudioMeter = ({ theme = 'default', className }: AudioMeterProps) =>
       secondary: '#222222',
       accent: '#ff6b6b',
     },
+    purple: {
+      primary: '#9b87f5',
+      secondary: '#1A1F2C',
+      accent: '#D6BCFA',
+    },
+    soft: {
+      primary: '#F2FCE2',
+      secondary: '#222222',
+      accent: '#FEC6A1',
+    },
   };
 
-  const initAudio = async () => {
+  const initAudio = async (type: 'microphone' | 'playback') => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+
+      const constraints = type === 'microphone' 
+        ? { audio: true }
+        : { audio: { mediaSource: 'audiooutput' } };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints as MediaStreamConstraints);
       mediaStreamRef.current = stream;
       
       audioContextRef.current = new AudioContext();
@@ -43,9 +67,20 @@ export const AudioMeter = ({ theme = 'default', className }: AudioMeterProps) =>
       source.connect(analyserRef.current);
       
       analyserRef.current.fftSize = 256;
+      setIsListening(true);
       draw();
+
+      toast({
+        title: "Audio Connected",
+        description: `Now listening to ${type === 'microphone' ? 'microphone' : 'system audio'}`,
+      });
     } catch (error) {
-      console.error('Error accessing microphone:', error);
+      console.error('Error accessing audio:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not access audio. Please check your permissions.",
+      });
     }
   };
 
@@ -87,8 +122,6 @@ export const AudioMeter = ({ theme = 'default', className }: AudioMeterProps) =>
   };
 
   useEffect(() => {
-    initAudio();
-    
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -103,14 +136,32 @@ export const AudioMeter = ({ theme = 'default', className }: AudioMeterProps) =>
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={cn(
-        "w-full h-64 rounded-lg bg-meter-bg transition-all duration-300",
-        className
+    <div className="space-y-4">
+      {!isListening && (
+        <div className="flex gap-2 justify-center">
+          <button
+            onClick={() => initAudio('microphone')}
+            className="px-4 py-2 bg-meter-accent1 text-black rounded-lg hover:opacity-90 transition-opacity"
+          >
+            Listen to Microphone
+          </button>
+          <button
+            onClick={() => initAudio('playback')}
+            className="px-4 py-2 bg-meter-accent2 text-white rounded-lg hover:opacity-90 transition-opacity"
+          >
+            Listen to System Audio
+          </button>
+        </div>
       )}
-      width={1024}
-      height={256}
-    />
+      <canvas
+        ref={canvasRef}
+        className={cn(
+          "w-full h-64 rounded-lg bg-meter-bg transition-all duration-300",
+          className
+        )}
+        width={1024}
+        height={256}
+      />
+    </div>
   );
 };

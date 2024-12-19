@@ -24,6 +24,8 @@ export default {
           accent1: "#00ff95",
           accent2: "#ff3366",
           accent3: "#ffae00",
+          accent4: "#9b87f5",
+          accent5: "#F2FCE2",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

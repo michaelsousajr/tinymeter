@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AudioMeter } from '@/components/AudioMeter';
 import { PopoutButton } from '@/components/PopoutButton';
 import { ThemeSelector } from '@/components/ThemeSelector';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const Index = () => {
-  const [theme, setTheme] = useState<'default' | 'neon' | 'vintage'>('default');
+  const [theme, setTheme] = useState<'default' | 'neon' | 'vintage' | 'purple' | 'soft'>('default');
+  const [showWelcome, setShowWelcome] = useState(true);
 
   const handlePopout = () => {
     const width = 800;
@@ -23,7 +31,7 @@ const Index = () => {
         <!DOCTYPE html>
         <html>
           <head>
-            <title>TinyMeter</title>
+            <title>tinymeter</title>
             <style>
               body { margin: 0; background: #222222; overflow: hidden; }
               canvas { width: 100%; height: 100vh; }
@@ -91,10 +99,23 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-meter-bg text-white p-8">
+      <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Welcome to tinymeter</DialogTitle>
+            <DialogDescription>
+              A minimal audio visualization tool for your music and sounds. 
+              Choose your audio source, select a theme, and watch the magic happen. 
+              You can even pop out the visualizer into a separate window!
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold tracking-tight">
-            TinyMeter
+            tinymeter
           </h1>
           <PopoutButton onPopout={handlePopout} />
         </div>
@@ -103,10 +124,6 @@ const Index = () => {
           <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
           <AudioMeter theme={theme} className="h-96" />
         </div>
-        
-        <p className="text-sm text-gray-400 text-center">
-          Click the expand button to open in a separate window
-        </p>
       </div>
     </div>
   );
