@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AudioMeter } from '@/components/AudioMeter';
 import { PopoutButton } from '@/components/PopoutButton';
 import { ThemeSelector } from '@/components/ThemeSelector';
+import { Footer } from '@/components/Footer';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,8 @@ import {
 } from "@/components/ui/dialog";
 
 const Index = () => {
-  const [theme, setTheme] = useState<'default' | 'neon' | 'vintage' | 'purple' | 'soft'>('default');
+  const [theme, setTheme] = useState<'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave'>('default');
+  const [visualizer, setVisualizer] = useState<'bars' | 'wave'>('bars');
   const [showWelcome, setShowWelcome] = useState(true);
 
   const handlePopout = () => {
@@ -73,7 +75,12 @@ const Index = () => {
                       const barHeight = (dataArray[i] / 255) * canvas.height;
                       
                       const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
-                      gradient.addColorStop(0, '#00ff95');
+                      gradient.addColorStop(0, '${theme === 'default' ? '#00ff95' : 
+                                            theme === 'neon' ? '#ff3366' : 
+                                            theme === 'vintage' ? '#ffae00' : 
+                                            theme === 'purple' ? '#9b87f5' : 
+                                            theme === 'soft' ? '#F2FCE2' : 
+                                            '#0EA5E9'}');
                       gradient.addColorStop(1, '#ffffff');
                       
                       ctx.fillStyle = gradient;
@@ -98,7 +105,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-meter-bg text-white p-8">
+    <div className="min-h-screen bg-meter-bg text-white p-8 pb-20">
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
         <DialogContent>
           <DialogHeader>
@@ -117,14 +124,19 @@ const Index = () => {
           <h1 className="text-4xl font-bold tracking-tight">
             tinymeter
           </h1>
-          <PopoutButton onPopout={handlePopout} />
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-4 relative">
           <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
-          <AudioMeter theme={theme} className="h-96" />
+          <div className="relative">
+            <AudioMeter theme={theme} visualizer={visualizer} className="h-96" />
+            <div className="absolute top-4 right-4">
+              <PopoutButton onPopout={handlePopout} />
+            </div>
+          </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

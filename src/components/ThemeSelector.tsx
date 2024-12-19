@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface ThemeSelectorProps {
   currentTheme: string;
-  onThemeChange: (theme: 'default' | 'neon' | 'vintage' | 'purple' | 'soft') => void;
+  onThemeChange: (theme: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave') => void;
 }
 
 export const ThemeSelector = ({ currentTheme, onThemeChange }: ThemeSelectorProps) => {
@@ -13,14 +13,15 @@ export const ThemeSelector = ({ currentTheme, onThemeChange }: ThemeSelectorProp
     { id: 'vintage', name: 'Vintage', color: 'bg-meter-accent3' },
     { id: 'purple', name: 'Purple', color: 'bg-[#9b87f5]' },
     { id: 'soft', name: 'Soft', color: 'bg-[#F2FCE2]' },
+    { id: 'wave', name: 'Wave', color: 'bg-[#0EA5E9]' },
   ];
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-wrap justify-center">
       {themes.map((theme) => (
         <button
           key={theme.id}
-          onClick={() => onThemeChange(theme.id as 'default' | 'neon' | 'vintage' | 'purple' | 'soft')}
+          onClick={() => onThemeChange(theme.id as 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave')}
           className={cn(
             "px-4 py-2 rounded-lg transition-all duration-300",
             theme.color,
