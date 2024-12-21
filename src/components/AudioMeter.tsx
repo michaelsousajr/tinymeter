@@ -2,10 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { Volume2, VolumeX } from 'lucide-react';
+import { BarsVisualizer } from './visualizers/BarsVisualizer';
+import { WaveVisualizer } from './visualizers/WaveVisualizer';
+import { CircleVisualizer } from './visualizers/CircleVisualizer';
 
 interface AudioMeterProps {
   theme?: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave';
-  visualizer?: 'bars' | 'wave';
+  visualizer?: 'bars' | 'wave' | 'circle';
   className?: string;
 }
 
@@ -22,17 +25,17 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'bars', className }
   const themeColors = {
     default: {
       primary: '#00ff95',
-      secondary: '#222222',
+      secondary: '#1A1F2C',
       accent: '#ffffff',
     },
     neon: {
       primary: '#ff3366',
-      secondary: '#222222',
+      secondary: '#1A1F2C',
       accent: '#00ffff',
     },
     vintage: {
       primary: '#ffae00',
-      secondary: '#222222',
+      secondary: '#1A1F2C',
       accent: '#ff6b6b',
     },
     purple: {
@@ -42,12 +45,12 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'bars', className }
     },
     soft: {
       primary: '#F2FCE2',
-      secondary: '#222222',
+      secondary: '#1A1F2C',
       accent: '#FEC6A1',
     },
     wave: {
       primary: '#0EA5E9',
-      secondary: '#222222',
+      secondary: '#1A1F2C',
       accent: '#33C3F0',
     },
   };
@@ -105,50 +108,6 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'bars', className }
     });
   };
 
-  const drawBars = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, dataArray: Uint8Array, bufferLength: number) => {
-    const barWidth = canvas.width / bufferLength * 2.5;
-    let x = 0;
-
-    for (let i = 0; i < bufferLength; i++) {
-      const barHeight = (dataArray[i] / 255) * canvas.height;
-      
-      const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
-      gradient.addColorStop(0, themeColors[theme].primary);
-      gradient.addColorStop(1, themeColors[theme].accent);
-      
-      ctx.fillStyle = gradient;
-      ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-      
-      x += barWidth + 1;
-    }
-  };
-
-  const drawWave = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, dataArray: Uint8Array, bufferLength: number) => {
-    ctx.beginPath();
-    ctx.moveTo(0, canvas.height / 2);
-
-    const sliceWidth = canvas.width / bufferLength;
-    let x = 0;
-
-    for (let i = 0; i < bufferLength; i++) {
-      const v = dataArray[i] / 128.0;
-      const y = (v * canvas.height) / 2;
-
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-
-      x += sliceWidth;
-    }
-
-    ctx.lineTo(canvas.width, canvas.height / 2);
-    ctx.strokeStyle = themeColors[theme].primary;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  };
-
   const draw = () => {
     if (!canvasRef.current || !analyserRef.current) return;
 
@@ -166,10 +125,16 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'bars', className }
       ctx.fillStyle = themeColors[theme].secondary;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      if (currentVisualizer === 'bars') {
-        drawBars(ctx, canvas, dataArray, bufferLength);
-      } else {
-        drawWave(ctx, canvas, dataArray, bufferLength);
+      switch (currentVisualizer) {
+        case 'bars':
+          BarsVisualizer({ ctx, canvas, dataArray, bufferLength, theme, themeColors });
+          break;
+        case 'wave':
+          WaveVisualizer({ ctx, canvas, dataArray, bufferLength, theme, themeColors });
+          break;
+        case 'circle':
+          CircleVisualizer({ ctx, canvas, dataArray, theme, themeColors });
+          break;
       }
     };
 
@@ -194,14 +159,12 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'bars', className }
     <div className="space-y-4">
       <div className="flex gap-2 justify-center">
         {!isListening ? (
-          <>
-            <button
-              onClick={initAudio}
-              className="px-4 py-2 bg-meter-accent1 text-black rounded-lg hover:opacity-90 transition-opacity"
-            >
-              Listen to Audio
-            </button>
-          </>
+          <button
+            onClick={initAudio}
+            className="px-4 py-2 bg-meter-accent1 text-black rounded-lg hover:opacity-90 transition-opacity"
+          >
+            Listen to Audio
+          </button>
         ) : (
           <button
             onClick={stopListening}
@@ -213,17 +176,18 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'bars', className }
         )}
         <select
           value={currentVisualizer}
-          onChange={(e) => setCurrentVisualizer(e.target.value as 'bars' | 'wave')}
-          className="px-4 py-2 bg-meter-bg border border-meter-accent1 text-white rounded-lg"
+          onChange={(e) => setCurrentVisualizer(e.target.value as 'bars' | 'wave' | 'circle')}
+          className="px-4 py-2 bg-[#1A1F2C] border border-meter-accent1 text-white rounded-lg"
         >
           <option value="bars">Bars</option>
           <option value="wave">Wave</option>
+          <option value="circle">Circle</option>
         </select>
       </div>
       <canvas
         ref={canvasRef}
         className={cn(
-          "w-full h-64 rounded-lg bg-meter-bg transition-all duration-300",
+          "w-full h-64 rounded-lg bg-[#1A1F2C] transition-all duration-300",
           className
         )}
         width={1024}
