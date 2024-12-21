@@ -11,9 +11,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
+
 const Index = () => {
   const [theme, setTheme] = useState<'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave'>('default');
-  const [visualizer, setVisualizer] = useState<'bars' | 'wave'>('bars');
+  const [visualizer, setVisualizer] = useState<VisualizerType>('spectrum');
   const [showWelcome, setShowWelcome] = useState(true);
 
   const handlePopout = () => {
