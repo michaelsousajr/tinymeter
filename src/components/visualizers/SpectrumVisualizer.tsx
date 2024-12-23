@@ -33,18 +33,18 @@ export const SpectrumVisualizer = ({
   
   ctx.clearRect(0, 0, width, height);
   
-  // Create gradient with proper color values
+  // Create gradient with proper color values and fallbacks
   const gradient = ctx.createLinearGradient(0, height, 0, 0);
-  const colors = themeColors[theme];
+  const defaultColors = {
+    primary: '#FF69B4',
+    secondary: '#9333EA'
+  };
   
-  if (colors) {
-    gradient.addColorStop(0, colors.primary);
-    gradient.addColorStop(1, colors.secondary);
-  } else {
-    // Fallback colors if theme is not found
-    gradient.addColorStop(0, '#FF69B4');
-    gradient.addColorStop(1, '#9333EA');
-  }
+  const colors = themeColors[theme] || defaultColors;
+  
+  // Always use valid color values
+  gradient.addColorStop(0, colors.primary);
+  gradient.addColorStop(1, colors.secondary);
   
   ctx.fillStyle = gradient;
   
@@ -66,7 +66,7 @@ export const SpectrumVisualizer = ({
   
   // Show frequency readout if enabled
   if (showFrequency && peakFrequency > 0) {
-    ctx.fillStyle = colors?.primary || '#FF69B4';
+    ctx.fillStyle = colors.primary;
     ctx.font = '14px monospace';
     ctx.fillText(`Peak: ${Math.round(peakFrequency)}Hz`, 10, 20);
   }
