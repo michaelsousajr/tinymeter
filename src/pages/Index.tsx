@@ -3,6 +3,7 @@ import { AudioMeter } from '@/components/AudioMeter';
 import { PopoutButton } from '@/components/PopoutButton';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import { Footer } from '@/components/Footer';
+import { ThemeType } from '@/types/theme';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-type ThemeType = 'magenta' | 'ocean' | 'sunset' | 'pink' | 'cosmic';
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
 
 const Index = () => {

@@ -1,7 +1,6 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
-
-type ThemeType = 'magenta' | 'ocean' | 'sunset' | 'pink' | 'cosmic';
+import { ThemeType } from '@/types/theme';
 
 interface ThemeSelectorProps {
   currentTheme: ThemeType;

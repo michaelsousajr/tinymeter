@@ -9,9 +9,7 @@ import { StereometerVisualizer } from './visualizers/StereometerVisualizer';
 import { PeakLUFSVisualizer } from './visualizers/PeakLUFSVisualizer';
 import { OscilloscopeVisualizer } from './visualizers/OscilloscopeVisualizer';
 import { Button } from "@/components/ui/button";
-
-type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
-type ThemeType = 'magenta' | 'ocean' | 'sunset' | 'pink';
+import { ThemeType } from '@/types/theme';
 
 interface AudioMeterProps {
   theme: ThemeType;
@@ -19,6 +17,8 @@ interface AudioMeterProps {
   className?: string;
   onThemeChange?: (theme: ThemeType) => void;
 }
+
+type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
 
 export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className, onThemeChange }: AudioMeterProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,19 +33,28 @@ export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className,
   const themeColors = {
     magenta: {
       primary: '#D946EF',
-      secondary: '#8B5CF6'
+      secondary: '#8B5CF6',
+      accent: '#9333EA'
     },
     ocean: {
       primary: '#0EA5E9',
-      secondary: '#2563EB'
+      secondary: '#2563EB',
+      accent: '#0284C7'
     },
     sunset: {
       primary: '#F97316',
-      secondary: '#DB2777'
+      secondary: '#DB2777',
+      accent: '#E11D48'
     },
     pink: {
-      primary: '#FF69B4',
-      secondary: '#9333EA'
+      primary: '#FFFFFF',
+      secondary: '#FFC0CB',
+      accent: '#FF69B4'
+    },
+    cosmic: {
+      primary: '#D6BCFA',
+      secondary: '#9F7AEA',
+      accent: '#805AD5'
     }
   };
 

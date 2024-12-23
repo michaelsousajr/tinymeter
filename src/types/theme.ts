@@ -1,0 +1,1 @@
+export type ThemeType = 'magenta' | 'ocean' | 'sunset' | 'pink' | 'cosmic';
