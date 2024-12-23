@@ -22,20 +22,29 @@ export default {
         meter: {
           bg: "#0F0F1A",
           magenta: {
+            bg: "#000000",
             primary: "#D946EF",
             secondary: "#8B5CF6"
           },
           ocean: {
+            bg: "#064E3B",
             primary: "#0EA5E9",
             secondary: "#2563EB"
           },
           sunset: {
+            bg: "#7C2D12",
             primary: "#F97316",
             secondary: "#DB2777"
           },
           pink: {
-            primary: "#FF69B4",
-            secondary: "#9333EA"
+            bg: "#FFDEE2",
+            primary: "#FFFFFF",
+            secondary: "#FFC0CB"
+          },
+          cosmic: {
+            bg: "#221F26",
+            primary: "#D6BCFA",
+            secondary: "#9F7AEA"
           }
         },
         border: "hsl(var(--border))",
@@ -77,9 +86,14 @@ export default {
           "0%, 100%": { transform: "scaleY(1)" },
           "50%": { transform: "scaleY(0.95)" },
         },
+        "meter-noise": {
+          "0%, 100%": { opacity: "0.9" },
+          "50%": { opacity: "1" },
+        }
       },
       animation: {
         "meter-bounce": "meter-bounce 0.3s ease-in-out",
+        "meter-noise": "meter-noise 0.5s ease-in-out infinite",
       },
     },
   },

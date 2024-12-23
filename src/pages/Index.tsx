@@ -11,12 +11,12 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-type ThemeType = 'magenta' | 'ocean' | 'sunset' | 'pink';
+type ThemeType = 'magenta' | 'ocean' | 'sunset' | 'pink' | 'cosmic';
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
 
 const Index = () => {
   const [theme, setTheme] = useState<ThemeType>('pink');
-  const [visualizer, setVisualizer] = useState<VisualizerType>('waveform');
+  const [visualizer, setVisualizer] = useState<VisualizerType>('spectrum');
   const [showWelcome, setShowWelcome] = useState(true);
 
   const handlePopout = () => {
@@ -89,7 +89,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-meter-bg text-white p-8 pb-20">
+    <div className={`min-h-screen text-white p-8 pb-20 bg-meter-${theme}-bg`}>
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
         <DialogContent>
           <DialogHeader>
@@ -105,7 +105,7 @@ const Index = () => {
 
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-meter-pink-primary to-meter-pink-secondary bg-clip-text text-transparent">
+          <h1 className={`text-4xl font-bold tracking-tight bg-gradient-to-r from-meter-${theme}-primary to-meter-${theme}-secondary bg-clip-text text-transparent`}>
             tinymeter
           </h1>
           <PopoutButton onPopout={handlePopout} />
@@ -116,7 +116,7 @@ const Index = () => {
           <AudioMeter 
             theme={theme} 
             visualizer={visualizer} 
-            className="h-96" 
+            className="h-96 animate-meter-noise" 
             onThemeChange={setTheme}
           />
         </div>

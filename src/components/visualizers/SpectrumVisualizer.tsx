@@ -5,15 +5,8 @@ interface SpectrumVisualizerProps {
   canvas: HTMLCanvasElement;
   dataArray: Uint8Array;
   theme: string;
-  themeColors: {
-    [key: string]: {
-      primary: string;
-      secondary: string;
-    };
-  };
+  themeColors: any;
   mode?: 'fft' | 'color' | 'both';
-  smoothing?: number;
-  channel?: 'left' | 'right' | 'mid' | 'side';
   showFrequency?: boolean;
 }
 
@@ -24,8 +17,6 @@ export const SpectrumVisualizer = ({
   theme,
   themeColors,
   mode = 'both',
-  smoothing = 0.8,
-  channel = 'mid',
   showFrequency = true
 }: SpectrumVisualizerProps) => {
   const width = canvas.width;
@@ -42,32 +33,46 @@ export const SpectrumVisualizer = ({
   
   const colors = themeColors[theme] || defaultColors;
   
-  // Always use valid color values
-  gradient.addColorStop(0, colors.primary);
-  gradient.addColorStop(1, colors.secondary);
+  // Add noise effect
+  const noise = Math.random() * 0.1;
+  const primaryWithNoise = adjustColorBrightness(colors.primary, noise);
+  const secondaryWithNoise = adjustColorBrightness(colors.secondary, noise);
+  
+  gradient.addColorStop(0, primaryWithNoise);
+  gradient.addColorStop(1, secondaryWithNoise);
   
   ctx.fillStyle = gradient;
   
-  // Find peak frequency for readout
+  const barWidth = width / dataArray.length;
   let peakFrequency = 0;
   let peakAmplitude = 0;
-  const barWidth = width / dataArray.length;
   
   for (let i = 0; i < dataArray.length; i++) {
     const barHeight = (dataArray[i] / 255) * height;
     
     if (dataArray[i] > peakAmplitude) {
       peakAmplitude = dataArray[i];
-      peakFrequency = i * (44100 / dataArray.length); // Approximate frequency
+      peakFrequency = i * (44100 / dataArray.length);
     }
     
-    ctx.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
+    // Add slight randomness to bar heights for noise effect
+    const noiseHeight = barHeight * (1 + (Math.random() - 0.5) * 0.1);
+    ctx.fillRect(i * barWidth, height - noiseHeight, barWidth, noiseHeight);
   }
   
-  // Show frequency readout if enabled
   if (showFrequency && peakFrequency > 0) {
     ctx.fillStyle = colors.primary;
     ctx.font = '14px monospace';
     ctx.fillText(`Peak: ${Math.round(peakFrequency)}Hz`, 10, 20);
   }
 };
+
+// Helper function to adjust color brightness
+function adjustColorBrightness(color: string, amount: number): string {
+  const hex = color.replace('#', '');
+  const r = Math.min(255, Math.max(0, parseInt(hex.slice(0, 2), 16) * (1 + amount)));
+  const g = Math.min(255, Math.max(0, parseInt(hex.slice(2, 4), 16) * (1 + amount)));
+  const b = Math.min(255, Math.max(0, parseInt(hex.slice(4, 6), 16) * (1 + amount)));
+  
+  return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+}
