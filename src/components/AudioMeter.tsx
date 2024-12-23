@@ -20,7 +20,7 @@ interface AudioMeterProps {
 
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
 
-export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className, onThemeChange }: AudioMeterProps) => {
+export const AudioMeter = ({ theme = 'magenta', visualizer = 'oscilloscope', className, onThemeChange }: AudioMeterProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -48,8 +48,8 @@ export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className,
     },
     pink: {
       primary: '#FFFFFF',
-      secondary: '#FFC0CB',
-      accent: '#FF69B4'
+      secondary: '#FFFFFF',
+      accent: '#FFFFFF'
     },
     cosmic: {
       primary: '#D6BCFA',
@@ -83,15 +83,15 @@ export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className,
 
       audioContextRef.current = new AudioContext();
       analyserRef.current = audioContextRef.current.createAnalyser();
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: true 
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true
       });
-      
+
       mediaStreamRef.current = stream;
       const source = audioContextRef.current.createMediaStreamSource(stream);
       source.connect(analyserRef.current);
-      
+
       analyserRef.current.fftSize = 2048;
       setIsListening(true);
       draw();
@@ -136,7 +136,7 @@ export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className,
 
     const bufferLength = analyserRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
-    
+
     const drawFrame = () => {
       animationFrameRef.current = requestAnimationFrame(drawFrame);
       analyserRef.current!.getByteFrequencyData(dataArray);
@@ -146,11 +146,11 @@ export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className,
 
       switch (currentVisualizer) {
         case 'spectrogram':
-          SpectrogramVisualizer({ 
-            ctx, 
-            canvas, 
-            dataArray, 
-            theme, 
+          SpectrogramVisualizer({
+            ctx,
+            canvas,
+            dataArray,
+            theme,
             themeColors,
             orientation: visualizerSettings.orientation,
             mode: visualizerSettings.mode,
@@ -159,11 +159,11 @@ export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className,
           });
           break;
         case 'waveform':
-          WaveformVisualizer({ 
-            ctx, 
-            canvas, 
-            dataArray, 
-            theme, 
+          WaveformVisualizer({
+            ctx,
+            canvas,
+            dataArray,
+            theme,
             themeColors,
             channels: visualizerSettings.channels,
             colorMode: visualizerSettings.colorMode,
@@ -172,11 +172,11 @@ export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className,
           });
           break;
         case 'spectrum':
-          SpectrumVisualizer({ 
-            ctx, 
-            canvas, 
-            dataArray, 
-            theme, 
+          SpectrumVisualizer({
+            ctx,
+            canvas,
+            dataArray,
+            theme,
             themeColors,
             mode: 'fft',
             showFrequency: visualizerSettings.showFrequency
@@ -225,7 +225,7 @@ export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className,
         {!isListening ? (
           <Button
             onClick={initAudio}
-            className="bg-meter-accent1 text-black hover:bg-meter-accent1/90"
+            className="bg-slate-900 rounded-lg"
           >
             <Mic className="w-4 h-4 mr-2" />
             Start Listening

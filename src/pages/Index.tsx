@@ -95,8 +95,8 @@ const Index = () => {
           <DialogHeader>
             <DialogTitle>Welcome to tinymeter</DialogTitle>
             <DialogDescription>
-              A minimal audio visualization tool for your music and sounds. 
-              Choose your audio source, select a theme, and watch the magic happen. 
+              A minimal audio visualization tool for your music and sounds.
+              Choose your audio source, select a theme, and watch the magic happen.
               You can even pop out the visualizer into a separate window!
             </DialogDescription>
           </DialogHeader>
@@ -110,13 +110,13 @@ const Index = () => {
           </h1>
           <PopoutButton onPopout={handlePopout} />
         </div>
-        
+
         <div className="space-y-4 relative">
           <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
-          <AudioMeter 
-            theme={theme} 
-            visualizer={visualizer} 
-            className="h-96 animate-meter-noise" 
+          <AudioMeter
+            theme={theme}
+            visualizer={visualizer}
+            className="h-96 animate-meter-noise"
             onThemeChange={setTheme}
           />
         </div>
