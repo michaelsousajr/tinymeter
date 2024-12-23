@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AudioMeter } from '@/components/AudioMeter';
 import { PopoutButton } from '@/components/PopoutButton';
 import { ThemeSelector } from '@/components/ThemeSelector';
@@ -14,8 +14,8 @@ import {
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
 
 const Index = () => {
-  const [theme, setTheme] = useState<'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave'>('default');
-  const [visualizer, setVisualizer] = useState<VisualizerType>('spectrum');
+  const [theme, setTheme] = useState<'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave' | 'pink'>('pink');
+  const [visualizer, setVisualizer] = useState<VisualizerType>('waveform');
   const [showWelcome, setShowWelcome] = useState(true);
 
   const handlePopout = () => {
@@ -25,60 +25,66 @@ const Index = () => {
     const top = (window.screen.height - height) / 2;
 
     const popoutWindow = window.open(
-      '',
+      '/',
       'TinyMeter',
       `width=${width},height=${height},left=${left},top=${top}`
     );
 
     if (popoutWindow) {
-      // Include current theme and visualizer in the popout window
-      const styles = `
-        body { 
-          margin: 0; 
-          background: var(--background);
-          overflow: hidden;
-        }
-        canvas { 
-          width: 100%; 
-          height: 100vh;
-        }
-      `;
-
-      const html = `
-        <!DOCTYPE html>
+      const popoutContent = `
         <html>
           <head>
             <title>tinymeter</title>
-            <style>${styles}</style>
-            <link rel="stylesheet" href="${window.location.origin}/src/index.css">
+            <style>
+              body { 
+                margin: 0; 
+                padding: 0;
+                background: ${theme === 'pink' ? '#FF69B4' : '#222222'};
+                overflow: hidden;
+              }
+              #meter {
+                width: 100%;
+                height: 100vh;
+              }
+            </style>
           </head>
           <body>
-            <div id="root"></div>
-            <script type="module">
-              import React from 'react';
-              import { createRoot } from 'react-dom/client';
-              import { AudioMeter } from '${window.location.origin}/src/components/AudioMeter';
+            <div id="meter"></div>
+            <script>
+              const meter = document.getElementById('meter');
+              const canvas = document.createElement('canvas');
+              canvas.style.width = '100%';
+              canvas.style.height = '100%';
+              meter.appendChild(canvas);
               
-              const root = createRoot(document.getElementById('root'));
-              root.render(
-                React.createElement(AudioMeter, { 
-                  theme: "${theme}",
-                  visualizer: "${visualizer}",
-                  className: "h-screen"
-                })
-              );
+              // Copy audio context and analyzer from parent window
+              const parentMeter = window.opener.document.querySelector('canvas');
+              const ctx = canvas.getContext('2d');
+              
+              function copyCanvas() {
+                if (parentMeter && ctx) {
+                  canvas.width = parentMeter.width;
+                  canvas.height = parentMeter.height;
+                  ctx.drawImage(parentMeter, 0, 0);
+                }
+                requestAnimationFrame(copyCanvas);
+              }
+              
+              copyCanvas();
             </script>
           </body>
         </html>
       `;
 
-      popoutWindow.document.write(html);
+      popoutWindow.document.write(popoutContent);
       popoutWindow.document.close();
     }
   };
 
   return (
-    <div className="min-h-screen bg-meter-bg text-white p-8 pb-20">
+    <div className="min-h-screen bg-meter-bg text-white p-8 pb-20" style={{ 
+      background: theme === 'pink' ? '#FF69B4' : undefined 
+    }}>
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
         <DialogContent>
           <DialogHeader>

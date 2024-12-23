@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface ThemeSelectorProps {
   currentTheme: string;
-  onThemeChange: (theme: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave') => void;
+  onThemeChange: (theme: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave' | 'pink') => void;
 }
 
 export const ThemeSelector = ({ currentTheme, onThemeChange }: ThemeSelectorProps) => {
@@ -11,9 +11,10 @@ export const ThemeSelector = ({ currentTheme, onThemeChange }: ThemeSelectorProp
     { id: 'default', name: 'Default', color: 'bg-meter-accent1' },
     { id: 'neon', name: 'Neon', color: 'bg-meter-accent2' },
     { id: 'vintage', name: 'Vintage', color: 'bg-meter-accent3' },
-    { id: 'purple', name: 'Purple', color: 'bg-[#9b87f5]' },
-    { id: 'soft', name: 'Soft', color: 'bg-[#F2FCE2]' },
-    { id: 'wave', name: 'Wave', color: 'bg-[#0EA5E9]' },
+    { id: 'purple', name: 'Purple', color: 'bg-meter-accent4' },
+    { id: 'soft', name: 'Soft', color: 'bg-meter-accent5' },
+    { id: 'wave', name: 'Wave', color: 'bg-meter-wave' },
+    { id: 'pink', name: 'Pink', color: 'bg-meter-pink' },
   ];
 
   return (
@@ -21,7 +22,7 @@ export const ThemeSelector = ({ currentTheme, onThemeChange }: ThemeSelectorProp
       {themes.map((theme) => (
         <button
           key={theme.id}
-          onClick={() => onThemeChange(theme.id as 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave')}
+          onClick={() => onThemeChange(theme.id as 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave' | 'pink')}
           className={cn(
             "px-4 py-2 rounded-lg transition-all duration-300",
             theme.color,

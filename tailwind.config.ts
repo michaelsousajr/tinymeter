@@ -27,6 +27,8 @@ export default {
           accent4: "#9b87f5",
           accent5: "#F2FCE2",
           wave: "#0EA5E9",
+          pink: "#FF69B4",
+          cream: "#FFF5E1"
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
 
 interface AudioMeterProps {
-  theme?: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave';
+  theme?: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave' | 'pink';
   visualizer?: VisualizerType;
   className?: string;
-  onThemeChange?: (theme: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave') => void;
+  onThemeChange?: (theme: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave' | 'pink') => void;
 }
 
 export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', className, onThemeChange }: AudioMeterProps) => {
@@ -59,6 +59,11 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', classNa
       primary: '#0EA5E9',
       secondary: '#0B0B0B',
       accent: '#33C3F0',
+    },
+    pink: {
+      primary: '#FFF5E1',
+      secondary: '#FF69B4',
+      accent: '#FFFFFF',
     },
   };
 
