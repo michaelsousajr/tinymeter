@@ -20,15 +20,23 @@ export default {
     extend: {
       colors: {
         meter: {
-          bg: "#222222",
-          accent1: "#00ff95",
-          accent2: "#ff3366",
-          accent3: "#ffae00",
-          accent4: "#9b87f5",
-          accent5: "#F2FCE2",
-          wave: "#0EA5E9",
-          pink: "#FF69B4",
-          cream: "#FFF5E1"
+          bg: "#0F0F1A",
+          magenta: {
+            primary: "#D946EF",
+            secondary: "#8B5CF6"
+          },
+          ocean: {
+            primary: "#0EA5E9",
+            secondary: "#2563EB"
+          },
+          sunset: {
+            primary: "#F97316",
+            secondary: "#DB2777"
+          },
+          pink: {
+            primary: "#FF69B4",
+            secondary: "#9333EA"
+          }
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

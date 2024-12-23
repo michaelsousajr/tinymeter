@@ -14,7 +14,7 @@ import {
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
 
 const Index = () => {
-  const [theme, setTheme] = useState<'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave' | 'pink'>('pink');
+  const [theme, setTheme] = useState<'magenta' | 'ocean' | 'sunset' | 'pink'>('pink');
   const [visualizer, setVisualizer] = useState<VisualizerType>('waveform');
   const [showWelcome, setShowWelcome] = useState(true);
 
@@ -25,26 +25,42 @@ const Index = () => {
     const top = (window.screen.height - height) / 2;
 
     const popoutWindow = window.open(
-      '/',
+      '',
       'TinyMeter',
       `width=${width},height=${height},left=${left},top=${top}`
     );
 
     if (popoutWindow) {
+      const gradients = {
+        magenta: 'from-meter-magenta-primary to-meter-magenta-secondary',
+        ocean: 'from-meter-ocean-primary to-meter-ocean-secondary',
+        sunset: 'from-meter-sunset-primary to-meter-sunset-secondary',
+        pink: 'from-meter-pink-primary to-meter-pink-secondary'
+      };
+
       const popoutContent = `
+        <!DOCTYPE html>
         <html>
           <head>
             <title>tinymeter</title>
             <style>
               body { 
                 margin: 0; 
-                padding: 0;
-                background: ${theme === 'pink' ? '#FF69B4' : '#222222'};
+                padding: 20px;
+                background: #0F0F1A;
                 overflow: hidden;
               }
               #meter {
                 width: 100%;
                 height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              canvas {
+                width: 100%;
+                height: 100%;
+                border-radius: 12px;
               }
             </style>
           </head>
@@ -53,24 +69,23 @@ const Index = () => {
             <script>
               const meter = document.getElementById('meter');
               const canvas = document.createElement('canvas');
-              canvas.style.width = '100%';
-              canvas.style.height = '100%';
               meter.appendChild(canvas);
               
-              // Copy audio context and analyzer from parent window
-              const parentMeter = window.opener.document.querySelector('canvas');
+              const parentCanvas = window.opener.document.querySelector('canvas');
               const ctx = canvas.getContext('2d');
               
               function copyCanvas() {
-                if (parentMeter && ctx) {
-                  canvas.width = parentMeter.width;
-                  canvas.height = parentMeter.height;
-                  ctx.drawImage(parentMeter, 0, 0);
+                if (parentCanvas && ctx) {
+                  canvas.width = parentCanvas.width;
+                  canvas.height = parentCanvas.height;
+                  ctx.drawImage(parentCanvas, 0, 0);
                 }
                 requestAnimationFrame(copyCanvas);
               }
               
               copyCanvas();
+
+              window.opener.addEventListener('unload', () => window.close());
             </script>
           </body>
         </html>
@@ -82,9 +97,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-meter-bg text-white p-8 pb-20" style={{ 
-      background: theme === 'pink' ? '#FF69B4' : undefined 
-    }}>
+    <div className="min-h-screen bg-meter-bg text-white p-8 pb-20">
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
         <DialogContent>
           <DialogHeader>
@@ -100,7 +113,7 @@ const Index = () => {
 
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold tracking-tight">
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-meter-pink-primary to-meter-pink-secondary bg-clip-text text-transparent">
             tinymeter
           </h1>
           <PopoutButton onPopout={handlePopout} />
@@ -116,7 +129,7 @@ const Index = () => {
           />
         </div>
       </div>
-      <Footer />
+      <Footer theme={theme} />
     </div>
   );
 };
