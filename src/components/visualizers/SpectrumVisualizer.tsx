@@ -5,7 +5,12 @@ interface SpectrumVisualizerProps {
   canvas: HTMLCanvasElement;
   dataArray: Uint8Array;
   theme: string;
-  themeColors: any;
+  themeColors: {
+    [key: string]: {
+      primary: string;
+      secondary: string;
+    };
+  };
   mode?: 'fft' | 'color' | 'both';
   smoothing?: number;
   channel?: 'left' | 'right' | 'mid' | 'side';
@@ -28,17 +33,25 @@ export const SpectrumVisualizer = ({
   
   ctx.clearRect(0, 0, width, height);
   
-  // Draw frequency spectrum
-  const barWidth = width / dataArray.length;
+  // Create gradient with proper color values
   const gradient = ctx.createLinearGradient(0, height, 0, 0);
-  gradient.addColorStop(0, themeColors[theme].primary);
-  gradient.addColorStop(1, themeColors[theme].accent);
+  const colors = themeColors[theme];
+  
+  if (colors) {
+    gradient.addColorStop(0, colors.primary);
+    gradient.addColorStop(1, colors.secondary);
+  } else {
+    // Fallback colors if theme is not found
+    gradient.addColorStop(0, '#FF69B4');
+    gradient.addColorStop(1, '#9333EA');
+  }
   
   ctx.fillStyle = gradient;
   
   // Find peak frequency for readout
   let peakFrequency = 0;
   let peakAmplitude = 0;
+  const barWidth = width / dataArray.length;
   
   for (let i = 0; i < dataArray.length; i++) {
     const barHeight = (dataArray[i] / 255) * height;
@@ -53,7 +66,7 @@ export const SpectrumVisualizer = ({
   
   // Show frequency readout if enabled
   if (showFrequency && peakFrequency > 0) {
-    ctx.fillStyle = themeColors[theme].accent;
+    ctx.fillStyle = colors?.primary || '#FF69B4';
     ctx.font = '14px monospace';
     ctx.fillText(`Peak: ${Math.round(peakFrequency)}Hz`, 10, 20);
   }
