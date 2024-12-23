@@ -11,10 +11,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+type ThemeType = 'magenta' | 'ocean' | 'sunset' | 'pink';
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
 
 const Index = () => {
-  const [theme, setTheme] = useState<'magenta' | 'ocean' | 'sunset' | 'pink'>('pink');
+  const [theme, setTheme] = useState<ThemeType>('pink');
   const [visualizer, setVisualizer] = useState<VisualizerType>('waveform');
   const [showWelcome, setShowWelcome] = useState(true);
 
@@ -31,14 +32,7 @@ const Index = () => {
     );
 
     if (popoutWindow) {
-      const gradients = {
-        magenta: 'from-meter-magenta-primary to-meter-magenta-secondary',
-        ocean: 'from-meter-ocean-primary to-meter-ocean-secondary',
-        sunset: 'from-meter-sunset-primary to-meter-sunset-secondary',
-        pink: 'from-meter-pink-primary to-meter-pink-secondary'
-      };
-
-      const popoutContent = `
+      popoutWindow.document.write(`
         <!DOCTYPE html>
         <html>
           <head>
@@ -89,9 +83,7 @@ const Index = () => {
             </script>
           </body>
         </html>
-      `;
-
-      popoutWindow.document.write(popoutContent);
+      `);
       popoutWindow.document.close();
     }
   };

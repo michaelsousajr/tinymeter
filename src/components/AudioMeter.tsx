@@ -11,15 +11,16 @@ import { OscilloscopeVisualizer } from './visualizers/OscilloscopeVisualizer';
 import { Button } from "@/components/ui/button";
 
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
+type ThemeType = 'magenta' | 'ocean' | 'sunset' | 'pink';
 
 interface AudioMeterProps {
-  theme?: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave' | 'pink';
+  theme: ThemeType;
   visualizer?: VisualizerType;
   className?: string;
-  onThemeChange?: (theme: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave' | 'pink') => void;
+  onThemeChange?: (theme: ThemeType) => void;
 }
 
-export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', className, onThemeChange }: AudioMeterProps) => {
+export const AudioMeter = ({ theme = 'pink', visualizer = 'spectrum', className, onThemeChange }: AudioMeterProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -30,41 +31,22 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', classNa
   const [currentVisualizer, setCurrentVisualizer] = useState<VisualizerType>(visualizer);
 
   const themeColors = {
-    default: {
-      primary: '#00ff95',
-      secondary: '#111111',
-      accent: '#ffffff',
+    magenta: {
+      primary: '#D946EF',
+      secondary: '#8B5CF6'
     },
-    neon: {
-      primary: '#ff3366',
-      secondary: '#0A0A0A',
-      accent: '#00ffff',
-    },
-    vintage: {
-      primary: '#ffae00',
-      secondary: '#121212',
-      accent: '#ff6b6b',
-    },
-    purple: {
-      primary: '#9b87f5',
-      secondary: '#0D0D0D',
-      accent: '#D6BCFA',
-    },
-    soft: {
-      primary: '#F2FCE2',
-      secondary: '#0F0F0F',
-      accent: '#FEC6A1',
-    },
-    wave: {
+    ocean: {
       primary: '#0EA5E9',
-      secondary: '#0B0B0B',
-      accent: '#33C3F0',
+      secondary: '#2563EB'
+    },
+    sunset: {
+      primary: '#F97316',
+      secondary: '#DB2777'
     },
     pink: {
-      primary: '#FFF5E1',
-      secondary: '#FF69B4',
-      accent: '#FFFFFF',
-    },
+      primary: '#FF69B4',
+      secondary: '#9333EA'
+    }
   };
 
   const [visualizerSettings, setVisualizerSettings] = useState({
