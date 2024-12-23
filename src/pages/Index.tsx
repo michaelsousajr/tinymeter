@@ -31,34 +31,49 @@ const Index = () => {
     );
 
     if (popoutWindow) {
-      popoutWindow.document.write(`
+      // Include current theme and visualizer in the popout window
+      const styles = `
+        body { 
+          margin: 0; 
+          background: var(--background);
+          overflow: hidden;
+        }
+        canvas { 
+          width: 100%; 
+          height: 100vh;
+        }
+      `;
+
+      const html = `
         <!DOCTYPE html>
         <html>
           <head>
             <title>tinymeter</title>
-            <style>
-              body { margin: 0; background: #222222; overflow: hidden; }
-              canvas { width: 100%; height: 100vh; }
-            </style>
+            <style>${styles}</style>
+            <link rel="stylesheet" href="${window.location.origin}/src/index.css">
           </head>
           <body>
             <div id="root"></div>
             <script type="module">
+              import React from 'react';
               import { createRoot } from 'react-dom/client';
-              import { AudioMeter } from './components/AudioMeter';
+              import { AudioMeter } from '${window.location.origin}/src/components/AudioMeter';
               
               const root = createRoot(document.getElementById('root'));
               root.render(
-                <AudioMeter 
-                  theme="${theme}" 
-                  visualizer="${visualizer}"
-                  className="h-screen"
-                />
+                React.createElement(AudioMeter, { 
+                  theme: "${theme}",
+                  visualizer: "${visualizer}",
+                  className: "h-screen"
+                })
               );
             </script>
           </body>
         </html>
-      `);
+      `;
+
+      popoutWindow.document.write(html);
+      popoutWindow.document.close();
     }
   };
 
