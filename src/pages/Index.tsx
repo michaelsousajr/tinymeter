@@ -42,63 +42,19 @@ const Index = () => {
             </style>
           </head>
           <body>
-            <canvas id="popoutCanvas"></canvas>
-            <script>
-              const canvas = document.getElementById('popoutCanvas');
-              const ctx = canvas.getContext('2d');
+            <div id="root"></div>
+            <script type="module">
+              import { createRoot } from 'react-dom/client';
+              import { AudioMeter } from './components/AudioMeter';
               
-              async function initAudio() {
-                try {
-                  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                  const audioContext = new AudioContext();
-                  const analyser = audioContext.createAnalyser();
-                  const source = audioContext.createMediaStreamSource(stream);
-                  
-                  source.connect(analyser);
-                  analyser.fftSize = 256;
-                  
-                  function draw() {
-                    requestAnimationFrame(draw);
-                    
-                    const bufferLength = analyser.frequencyBinCount;
-                    const dataArray = new Uint8Array(bufferLength);
-                    analyser.getByteFrequencyData(dataArray);
-                    
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                    
-                    ctx.fillStyle = '#222222';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    const barWidth = canvas.width / bufferLength * 2.5;
-                    let x = 0;
-                    
-                    for (let i = 0; i < bufferLength; i++) {
-                      const barHeight = (dataArray[i] / 255) * canvas.height;
-                      
-                      const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
-                      gradient.addColorStop(0, '${theme === 'default' ? '#00ff95' : 
-                                            theme === 'neon' ? '#ff3366' : 
-                                            theme === 'vintage' ? '#ffae00' : 
-                                            theme === 'purple' ? '#9b87f5' : 
-                                            theme === 'soft' ? '#F2FCE2' : 
-                                            '#0EA5E9'}');
-                      gradient.addColorStop(1, '#ffffff');
-                      
-                      ctx.fillStyle = gradient;
-                      ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-                      
-                      x += barWidth + 1;
-                    }
-                  }
-                  
-                  draw();
-                } catch (error) {
-                  console.error('Error:', error);
-                }
-              }
-              
-              initAudio();
+              const root = createRoot(document.getElementById('root'));
+              root.render(
+                <AudioMeter 
+                  theme="${theme}" 
+                  visualizer="${visualizer}"
+                  className="h-screen"
+                />
+              );
             </script>
           </body>
         </html>
@@ -126,16 +82,17 @@ const Index = () => {
           <h1 className="text-4xl font-bold tracking-tight">
             tinymeter
           </h1>
+          <PopoutButton onPopout={handlePopout} />
         </div>
         
         <div className="space-y-4 relative">
           <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
-          <div className="relative">
-            <AudioMeter theme={theme} visualizer={visualizer} className="h-96" />
-            <div className="absolute top-4 right-4">
-              <PopoutButton onPopout={handlePopout} />
-            </div>
-          </div>
+          <AudioMeter 
+            theme={theme} 
+            visualizer={visualizer} 
+            className="h-96" 
+            onThemeChange={setTheme}
+          />
         </div>
       </div>
       <Footer />

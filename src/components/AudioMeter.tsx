@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
-import { Volume2, VolumeX, Mic } from 'lucide-react';
+import { VolumeX, Mic } from 'lucide-react';
 import { SpectrogramVisualizer } from './visualizers/SpectrogramVisualizer';
 import { WaveformVisualizer } from './visualizers/WaveformVisualizer';
 import { SpectrumVisualizer } from './visualizers/SpectrumVisualizer';
@@ -9,18 +9,17 @@ import { StereometerVisualizer } from './visualizers/StereometerVisualizer';
 import { PeakLUFSVisualizer } from './visualizers/PeakLUFSVisualizer';
 import { OscilloscopeVisualizer } from './visualizers/OscilloscopeVisualizer';
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 type VisualizerType = 'spectrogram' | 'waveform' | 'spectrum' | 'stereometer' | 'peaklufs' | 'oscilloscope';
-type AudioSource = 'microphone' | 'system';
 
 interface AudioMeterProps {
   theme?: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave';
   visualizer?: VisualizerType;
   className?: string;
+  onThemeChange?: (theme: 'default' | 'neon' | 'vintage' | 'purple' | 'soft' | 'wave') => void;
 }
 
-export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', className }: AudioMeterProps) => {
+export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', className, onThemeChange }: AudioMeterProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -28,8 +27,40 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', classNa
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
   const [isListening, setIsListening] = useState(false);
-  const [audioSource, setAudioSource] = useState<AudioSource>('system');
   const [currentVisualizer, setCurrentVisualizer] = useState<VisualizerType>(visualizer);
+
+  const themeColors = {
+    default: {
+      primary: '#00ff95',
+      secondary: '#111111',
+      accent: '#ffffff',
+    },
+    neon: {
+      primary: '#ff3366',
+      secondary: '#0A0A0A',
+      accent: '#00ffff',
+    },
+    vintage: {
+      primary: '#ffae00',
+      secondary: '#121212',
+      accent: '#ff6b6b',
+    },
+    purple: {
+      primary: '#9b87f5',
+      secondary: '#0D0D0D',
+      accent: '#D6BCFA',
+    },
+    soft: {
+      primary: '#F2FCE2',
+      secondary: '#0F0F0F',
+      accent: '#FEC6A1',
+    },
+    wave: {
+      primary: '#0EA5E9',
+      secondary: '#0B0B0B',
+      accent: '#33C3F0',
+    },
+  };
 
   const [visualizerSettings, setVisualizerSettings] = useState({
     orientation: 'horizontal' as const,
@@ -45,39 +76,6 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', classNa
     cycle: 'multi' as const
   });
 
-  const themeColors = {
-    default: {
-      primary: '#00ff95',
-      secondary: '#1A1F2C',
-      accent: '#ffffff',
-    },
-    neon: {
-      primary: '#ff3366',
-      secondary: '#1A1F2C',
-      accent: '#00ffff',
-    },
-    vintage: {
-      primary: '#ffae00',
-      secondary: '#1A1F2C',
-      accent: '#ff6b6b',
-    },
-    purple: {
-      primary: '#9b87f5',
-      secondary: '#1A1F2C',
-      accent: '#D6BCFA',
-    },
-    soft: {
-      primary: '#F2FCE2',
-      secondary: '#1A1F2C',
-      accent: '#FEC6A1',
-    },
-    wave: {
-      primary: '#0EA5E9',
-      secondary: '#1A1F2C',
-      accent: '#33C3F0',
-    },
-  };
-
   const initAudio = async () => {
     try {
       if (audioContextRef.current) {
@@ -90,20 +88,9 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', classNa
       audioContextRef.current = new AudioContext();
       analyserRef.current = audioContextRef.current.createAnalyser();
       
-      let stream;
-      if (audioSource === 'system') {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          audio: { 
-            mandatory: {
-              chromeMediaSource: 'desktop'
-            }
-          } as any
-        });
-      } else {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          audio: true 
-        });
-      }
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: true 
+      });
       
       mediaStreamRef.current = stream;
       const source = audioContextRef.current.createMediaStreamSource(stream);
@@ -114,15 +101,15 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', classNa
       draw();
 
       toast({
-        title: `${audioSource === 'system' ? 'System' : 'Microphone'} Audio Connected`,
-        description: `Now listening to ${audioSource === 'system' ? 'system' : 'microphone'} audio`,
+        title: "Microphone Connected",
+        description: "Now listening to microphone audio",
       });
     } catch (error) {
       console.error('Error accessing audio:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: `Could not access ${audioSource} audio. Please check your permissions.`,
+        description: "Could not access microphone audio. Please check your permissions.",
       });
     }
   };
@@ -239,22 +226,12 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', classNa
   return (
     <div className="space-y-4">
       <div className="flex gap-2 justify-center items-center flex-wrap">
-        <ToggleGroup type="single" value={audioSource} onValueChange={(value) => value && setAudioSource(value as AudioSource)}>
-          <ToggleGroupItem value="system" aria-label="System Audio">
-            <Volume2 className="w-4 h-4 mr-2" />
-            System
-          </ToggleGroupItem>
-          <ToggleGroupItem value="microphone" aria-label="Microphone">
-            <Mic className="w-4 h-4 mr-2" />
-            Microphone
-          </ToggleGroupItem>
-        </ToggleGroup>
-
         {!isListening ? (
           <Button
             onClick={initAudio}
             className="bg-meter-accent1 text-black hover:bg-meter-accent1/90"
           >
+            <Mic className="w-4 h-4 mr-2" />
             Start Listening
           </Button>
         ) : (
@@ -283,7 +260,7 @@ export const AudioMeter = ({ theme = 'default', visualizer = 'spectrum', classNa
       <canvas
         ref={canvasRef}
         className={cn(
-          "w-full h-64 rounded-lg bg-[#1A1F2C] transition-all duration-300",
+          "w-full h-64 rounded-lg transition-all duration-300",
           className
         )}
         width={1024}
