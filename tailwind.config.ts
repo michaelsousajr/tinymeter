@@ -37,9 +37,9 @@ export default {
             secondary: "#DB2777"
           },
           pink: {
-            bg: "#FFDEE2",
+            bg: "#FFD0CB",
             primary: "#FFFFFF",
-            secondary: "#FFC0CB"
+            secondary: "#FFD0CB"
           },
           cosmic: {
             bg: "#221F26",
